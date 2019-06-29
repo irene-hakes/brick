@@ -1,5 +1,7 @@
-const canvas = document.getElementById("myCanvas");
-const ctx = canvas.getContext("2d");
+import { canvas, ctx } from './canvas.js';
+import { drawBricks, brickColumnCount, brickRowCount, bricks, brickWidth, brickHeight } from './drawBricks.js';
+import { Ball, Paddle } from './objects.js'
+
 let x = canvas.width / 2;
 let y = canvas.height - 30;
 let dx = 2;
@@ -13,49 +15,33 @@ let paddleX = (canvas.width - paddleWidth) / 2;
 let rightPressed = false;
 let leftPressed = false;
 
-const brickRowCount = 3;
-const brickColumnCount = 5;
-const brickWidth = 75;
-const brickHeight = 20;
-const brickPadding = 10;
-const brickOffsetTop = 30;
-const brickOffsetLeft = 30;
-
 let score = 0;
 
 document.addEventListener("keydown", keyDownHandler, false);
 document.addEventListener("keyup", keyUpHandler, false);
 
-function keyDownHandler(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") {
+const keyDownHandler = event => {
+  if (event.key === "Right" || event.key === "ArrowRight") {
     rightPressed = true;
   }
-  else if (e.key === "Left" || e.key === "ArrowLeft") {
+  else if (event.key === "Left" || event.key === "ArrowLeft") {
     leftPressed = true;
   }
 }
 
-function keyUpHandler(e) {
-  if (e.key === "Right" || e.key === "ArrowRight") {
+const keyUpHandler = event => {
+  if (event.key === "Right" || event.key === "ArrowRight") {
     rightPressed = false;
   }
-  else if (e.key === "Left" || e.key === "ArrowLeft") {
+  else if (event.key === "Left" || event.key === "ArrowLeft") {
     leftPressed = false;
   }
 }
 
-const bricks = [];
-for (let c = 0; c < brickColumnCount; c++) {
-  bricks[c] = [];
-  for (let r = 0; r < brickRowCount; r++) {
-    bricks[c][r] = { x: 0, y: 0, status: 1 };
-  }
-}
-
-function collisionDetection() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      const b = bricks[c][r];
+const collisionDetection = () => {
+  for (let col = 0; col < brickColumnCount; col++) {
+    for (let row = 0; row < brickRowCount; row++) {
+      const b = bricks[col][row];
       if (b.status === 1) {
         if (x > b.x && x < b.x + brickWidth && y > b.y && y < b.y + brickHeight) {
           dy = -dy;
@@ -72,50 +58,18 @@ function collisionDetection() {
   }
 }
 
-function drawBall() {
-  ctx.beginPath();
-  ctx.arc(x, y, ballRadius, 0, Math.PI * 2);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-}
 
-function drawPaddle() {
-  ctx.beginPath();
-  ctx.rect(paddleX, canvas.height - paddleHeight, paddleWidth, paddleHeight);
-  ctx.fillStyle = "#0095DD";
-  ctx.fill();
-  ctx.closePath();
-}
 
-function drawBricks() {
-  for (let c = 0; c < brickColumnCount; c++) {
-    for (let r = 0; r < brickRowCount; r++) {
-      if (bricks[c][r].status === 1) {
-        let brickX = (c * (brickWidth + brickPadding)) + brickOffsetLeft;
-        let brickY = (r * (brickHeight + brickPadding)) + brickOffsetTop;
-        bricks[c][r].x = brickX;
-        bricks[c][r].y = brickY;
-        ctx.beginPath();
-        ctx.rect(brickX, brickY, brickWidth, brickHeight);
-        ctx.fillStyle = "#0095DD";
-        ctx.fill();
-        ctx.closePath();
-      }
-    }
-  }
-}
-
-function drawScore() {
+const drawScore = () => {
   ctx.font = "16px Arial";
   ctx.fillStyle = "#0095DD";
   ctx.fillText("Score: " + score, 8, 20);
 }
 
-function draw() {
+const draw = () => {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
-  drawBall();
-  drawPaddle();
+  Ball(x, y, ballRadius);
+  Paddle(paddleX, paddleWidth, paddleHeight);
   drawBricks();
   collisionDetection();
   drawScore();
